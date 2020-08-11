@@ -76,8 +76,31 @@ def new_listing(request):
             description = a["description"],
             img_url = a["img_url"],
             category = a["category"],
-            starting_bid = a["starting_bid"])
+            starting_bid = a["starting_bid"],
+            user = request.user
+            )
         b.save()
         return render(request, "auctions/succes.html", {
             'message': "The list was created successfully!"
+        })
+
+
+def list(request, id1):
+    if request.method == "GET":
+        listing = Listing.objects.filter(id = id1).first()
+        watchlist = None
+        if (request.user.is_authenticated):
+            watchlist = Watchlist.objects.filter(listing=listing, user=request.user).first()
+        comment = listing.comment_set.all()
+        a = listing.maximum_bid()
+        b = listing.starting_bid
+        print(a)
+        if a["bid__max"] is None:
+            a["bid__max"] = b
+        print(y)
+        return render(request, "auctions/list.html", {
+            "listing": listing,
+            "comments": comment,
+            "watchlist": watchlist,
+            "maximum_bid": a
         })
