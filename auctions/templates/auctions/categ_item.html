@@ -1,0 +1,11 @@
+{% extends "auctions/layout.html "%}
+    {% block body %}
+        <hr>
+        {% for itemm in ca %}
+            <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <img src="{{ itemm.img_url }}" alt="" width="200" height="200">
+            <a href="/item/{{ itemm.id }}" class="btn btn-primary">{{ itemm.name }}</a>
+            <br><br>
+        {% endfor %}
+    {% endblock %}

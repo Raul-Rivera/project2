@@ -1,0 +1,34 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    New Item
+{% endblock %}
+
+{% block body %}
+<hr>
+    <h1>Create a new Listing:</h1>
+    <br>
+    <form action="/item/new" method ="post">
+        {% csrf_token %}
+        <h3>
+        <label for="">Name:&nbsp;&nbsp;
+            <input type="text" name="name" size="71" placeholder="Name of the item"></label>
+        <br><br>
+        <label for="">Description:&nbsp;&nbsp;<br>
+            <textarea name="description" id="" cols="83" rows="4"></textarea>
+        <br><br>
+        <label for="">Starting Bid: $
+            <input type="text" name="starting_bid" size="64"></label>
+        <br><br>
+        <label for="">Url:&nbsp;&nbsp;
+            <input type="text" name="img_url" size="74"></label>
+        <br><br>
+        <label for="">Category <br>
+            <input type="text" name="category" size="68"></label>
+        <br><br>
+            <h2 align="center">
+            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+            </h2>
+        </h3>
+    </form>
+{% endblock %}

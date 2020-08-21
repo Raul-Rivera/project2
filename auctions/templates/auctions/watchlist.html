@@ -1,0 +1,14 @@
+{% extends "auctions/layout.html" %}
+    {% block title %}
+        Watchlist
+    {% endblock %}
+    {% block body %}
+    <hr>
+        <br>
+        {% for itemm in watchlist %}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <img src="{{ itemm.catalog.img_url }}" alt="" width="200" height="200">
+            <a href="item/{{ itemm.catalog.id }}" class="btn btn-primary">{{ itemm.catalog.name }}</a>
+            <br><br>
+        {% endfor %}
+    {% endblock %}

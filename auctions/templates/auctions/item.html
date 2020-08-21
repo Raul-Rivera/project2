@@ -1,0 +1,86 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{ catalog.title }}
+{% endblock %}
+
+{% block body %}
+<hr>
+<table cellpadding="30">
+    <tr>
+        <td>
+            <h1 align="center">{{ catalog.name }}</h1>
+            <img src="{{ catalog.img_url }}" alt="" width="500" height="500">
+            <br><br>
+            <h5>Description: {{ catalog.description}}</h5>
+        </td>
+        <td>
+            <h4>
+            <ul class="list-group list-group-horizontal">
+                <li class="list-group-item list-group-item-primary">Offered By: {{ catalog.owner }}</li>
+                <li class="list-group-item list-group-item-danger">Best Offer: {{ catalog.new_owner }}</li>
+                <li class="list-group-item list-group-item-secondary">Category: {{ catalog.category }}</li>
+            </ul>
+            <br>
+            <ul class="list-group list-group-horizontal">
+                <li class="list-group-item list-group-item-success">Starting Bid: $ {{ catalog.starting_bid }}</li>
+                <li class="list-group-item list-group-item-warning">Current Bid: $ {{ maximum_bid.bid__max }}</li>
+            </ul>
+            </h4>
+            <br>
+            {% if catalog.active %}
+            {% if user.is_authenticated %}
+                {% if watchlist %}
+                    <div class="alert alert-info" role="alert" align="center">
+                        <a href="/watchlist/{{ catalog.id }}/del"><h4>Remove From Watch List</h4></a>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info" role="alert" align="center">
+                    <a href="/watchlist/{{ catalog.id }}/new"><h4>Add To Watch List</h4></a>
+                    </div>
+                {% endif %}
+                {% endif %}
+                {% if catalog.owner == request.user %}
+                    <div class="alert alert-danger" role="alert" align="center">
+                    <form action="/close/{{ catalog.id }}">
+                        {% csrf_token %}
+                    <input type="submit" value="Close Bidding" class="btn btn-danger">
+                    </form>
+                    </div>
+                {% endif %}
+                <h1>Add a new Bid:</h1>
+                {% with a=maximum_bid.bid__max %}
+                    <form action="/bid/new/{{ catalog.id }}" method ="post">
+                        {% csrf_token %}
+                    <input type = "number" name = "bid" min = "{{ a }}">
+                    <input class="btn btn-success" type = "submit">
+                    </form>
+                {% endwith %}
+                <br>
+                <h1>Add a new Comment:</h1>
+                <form action="/comment/new" method="post">
+                    {% csrf_token %}
+                    <textarea name="comment" id="" cols="50" rows="5"></textarea>
+                    <input type = "hidden" name = "id" value="{{ catalog.id }}">
+                    <input class="btn btn-success" type = "submit">
+                </form>
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>
+            {% for comment in comments %}
+            <div class="alert alert-info" role="alert">
+                <h4>By {{ comment.user }}:</h4>
+                <hr>
+                {{ comment }}
+            </div>
+            {% endfor %}
+            {% else %}
+            <h1 align="center">Auction is complete for this item</h1>
+            <h1 align="center">Winner is:  {{ catalog.new_owner }}</h1>
+            {% endif %}
+        </td>
+    </tr>
+</table>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+
+    {% block title %}
+        {{ message }}
+    {% endblock %}
+
+    {% block body %}
+        <hr><br><br>
+        <h1 align="center">{{ message }}
+        <br>
+        <button type="button" class="btn btn-outline-success">
+            <a href="{% url 'index' %}" class="alert-link">Return to Active Listing</a>
+        </button>
+        </h1>
+    {% endblock %}
