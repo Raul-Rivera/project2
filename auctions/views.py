@@ -4,12 +4,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing
+from .models import User, Listing, Bids, Comment, Watchlist
 
 
 def index(request):
     return render(request, "auctions/index.html", {
-        'listings': Listing.objects.all()
+        'catalogs': Listing.objects.all()
     })
 
 
@@ -65,42 +65,96 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-
-def new_listing(request):
+def new_item(request):
     if request.method == "GET":
-        return render(request,"auctions/listing.html")
+        return render(request,"auctions/new_item.html")
     else:
-        a = request.POST
-        b = Listing(
-            title = a["title"],
-            description = a["description"],
-            img_url = a["img_url"],
-            category = a["category"],
-            starting_bid = a["starting_bid"],
-            user = request.user
+        li = Listing(
+            name = request.POST["name"],
+            description = request.POST["description"],
+            img_url = request.POST["img_url"],
+            category = request.POST["category"],
+            starting_bid = request.POST["starting_bid"],
+            owner = request.user
             )
-        b.save()
-        return render(request, "auctions/succes.html", {
-            'message': "The list was created successfully!"
+        li.save()
+        return render(request, "auctions/success.html", {
+            'message': "The List Was Created Successfully!"
         })
 
 
-def list(request, id1):
+def item(request, id1):
     if request.method == "GET":
-        listing = Listing.objects.filter(id = id1).first()
+        catalog = Listing.objects.filter(id = id1).first()
         watchlist = None
         if (request.user.is_authenticated):
-            watchlist = Watchlist.objects.filter(listing=listing, user=request.user).first()
-        comment = listing.comment_set.all()
-        a = listing.maximum_bid()
-        b = listing.starting_bid
+            watchlist = Watchlist.objects.filter(catalog=catalog, user=request.user).first()
+        comment = catalog.comment_set.all()
+        a = catalog.maximum_bid()
+        b = catalog.starting_bid
         print(a)
         if a["bid__max"] is None:
             a["bid__max"] = b
-        print(y)
-        return render(request, "auctions/list.html", {
-            "listing": listing,
+        print(b)
+        return render(request, "auctions/item.html", {
+            "catalog": catalog,
             "comments": comment,
             "watchlist": watchlist,
             "maximum_bid": a
         })
+
+
+def new_bid(request, id):
+    if request.method == "POST":
+        bid = request.POST["bid"]
+        catalog = Listing.objects.get(pk = id)
+        bi = Bids(catalog = Listing.objects.get(pk = id), user = request.user, bid = bid)
+        bi.save()
+        catalog.maximum_bid = bi
+        catalog.new_owner = bi.user
+        catalog.save()
+        return HttpResponseRedirect(reverse("item", kwargs = {"id1": id}))
+
+
+def close_bid(request, id):
+    catalog = Listing.objects.get(pk = id)
+    catalog.active = False
+    catalog.save()
+    return HttpResponseRedirect(reverse("item", kwargs = {"id1": id}))
+
+
+def comment(request):
+    if request.method == "POST":
+        text = request.POST["comment"]
+        id1 = request.POST["id"]
+        user = request.user
+        co = Comment(catalog = Listing.objects.filter(id=id1).first(), user = user, text = text)
+        co.save()
+        return HttpResponseRedirect(reverse("item", kwargs = {"id1": id1}))
+
+
+def new_watch(request, id):
+    wa = Watchlist(user = request.user, catalog = Listing.objects.get(id = id))
+    wa.save()
+    return HttpResponseRedirect(reverse("item", kwargs = {"id1": id}))
+
+
+def del_watch(request, id):
+    wa = Watchlist.objects.filter(user =request.user, catalog = Listing.objects.get(id = id)).first()
+    wa.delete()
+    return HttpResponseRedirect(reverse("item", kwargs = {"id1": id}))
+
+
+def watchlist(request):
+    wa = Watchlist.objects.filter(user = request.user)
+    return render(request, "auctions/watchlist.html", {"watchlist": wa})
+
+
+def categories(request):
+    ca = Listing.objects.values("category").distinct()
+    return render(request, "auctions/category.html", {"ca": ca})
+
+
+def cat_item(request, name):
+    li = Listing.objects.filter(category = name)
+    return render(request, "auctions/categ_item.html", {"ca": li})

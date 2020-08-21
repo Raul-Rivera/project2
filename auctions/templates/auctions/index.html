@@ -1,21 +1,21 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h1>Active Listings</h1>
+    <h1>Active Listings:</h1>
     <ul>
-        {% for listing in listings %}
+        {% for catalog in catalogs %}
         <table cellpadding="20">
             <tr>
                 <td>
-                    <img src="{{ listing.img_url }}" alt="imagen" width="250" height="250">
+                    <img src="{{ catalog.img_url }}" alt="" width="200" height="200">
                 </td>
                 <td>
-                    <a href="/list/{{ listing.id }}" class="box">
-                        <h1>{{ listing.title }}</h1>
+                    <a href="/item/{{ catalog.id }}" class="box">
+                        <h1>{{ catalog.name }}</h1>
                     </a>
-                    <h5>Description: {{ listing.description}}</h5>
+                    <h5>Description: {{ catalog.description}}</h5>
                     <h5>Starting Price:
-                    <h3>&#160;$ {{ listing.starting_bid }}</h3></h5>
+                    <h3>&nbsp;&nbsp;$ {{ catalog.starting_bid }}</h3></h5>
                 </td>
                 <hr>
             </tr>
