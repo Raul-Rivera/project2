@@ -4,7 +4,7 @@
 
 _I created an eBay-like e-commerce auction site with Python using models and migrations in the framework Django._
 
-## Requirements: 📌
+## Specification: 📌
 
 Complete the implementation of your auction site. You must fulfill the following requirements:
 
